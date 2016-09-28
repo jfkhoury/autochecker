@@ -73,7 +73,10 @@ const BASE_IMAGE = getBaseImageFromDockerfile(DOCKERFILE_TEMPLATE)
 const PROJECT_NAME = (function getProjectName () {
   try {
     // TODO depends on language
-    return require(DIRECTORY_TO_TEST + '/package.json').name
+    // HACK: Docker throws when the name contains an `@` because it's a private repo.
+    var name = require(DIRECTORY_TO_TEST + '/package.json').name
+    name = name.indexOf("@") === 0 ? name.substr(1) : name
+    return name
   } catch (err) {
     return path.basename(DIRECTORY_TO_TEST)
   }
